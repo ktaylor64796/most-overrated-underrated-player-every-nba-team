@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBA Team Value Index 2026 | Action Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #05060c;
+            --panel: #11141d;
+            --accent: #42f5c5; 
+            --accent-dim: #13B89A;
+            --text: #e9f4f1;
+            --border: rgba(255,255,255,0.08);
+            --overrated: #ff4d4d;
+            --overrated-dim: #a30000;
+        }
+
+        body {
+            background: radial-gradient(circle at top right, #103f3a, transparent), var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            margin: 0; padding: 20px; line-height: 1.5; min-height: 100vh;
+        }
+
+        .wrapper { max-width: 1200px; margin: 0 auto; }
+
+        header { text-align: center; margin-bottom: 50px; }
+        .logo { font-weight: 900; letter-spacing: 2px; color: #666; margin-bottom: 5px; }
+        .logo span { color: var(--accent); }
+        h1 { font-size: 2.5rem; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: -1px; }
+        h1 span { color: var(--overrated); }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .team-panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        
+        .team-panel:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255,255,255,0.15);
+        }
+
+        .team-header {
+            font-size: 1.2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .player-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(0,0,0,0.2);
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .underrated-row { border-left: 4px solid var(--accent); }
+        .overrated-row { border-left: 4px solid var(--overrated); }
+
+        .player-photo {
+            width: 60px; height: 60px; border-radius: 50%;
+            overflow: hidden; background: #222; border: 2px solid var(--border);
+        }
+        .player-photo img { width: 100%; height: 100%; object-fit: cover; }
+
+        .player-info { flex: 1; }
+        .label {
+            font-size: 0.65rem; font-weight: 900;
+            letter-spacing: 1px; text-transform: uppercase;
+        }
+        .underrated-label { color: var(--accent-dim); }
+        .overrated-label { color: var(--overrated-dim); }
+
+        .player-name { font-size: 1rem; font-weight: 700; color: #fff; }
+
+        .value-score {
+            font-size: 1.5rem; font-weight: 900; text-align: right;
+            min-width: 80px;
+        }
+        .underrated-score { color: var(--accent); }
+        .overrated-score { color: var(--overrated); }
+
+        footer {
+            text-align: center; margin-top: 50px; padding: 20px;
+            border-top: 1px solid var(--border); color: #666; font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <header>
+        <div class="logo">ACTION <span>ANALYTICS</span></div>
+        <h1>Team <span>Value</span> Index: 2026 Edition</h1>
+        <p style="color: #888; font-size: 0.95rem; margin-top: 10px; max-width: 700px; margin-left: auto; margin-right: auto;">
+            The definitive index comparing <strong>On-Court Production</strong> against <strong>Market Expectation</strong> (Salary + Hype). 
+            Scores show the statistical gap. Post-2026 Trade Deadline rosters.
+        </p>
+    </header>
+
+    <div class="team-grid" id="team-grid">
+        </div>
+
+    <footer>
+        ACTION ANALYTICS © 2026 | All Value Scores are Proprietary | Data Verified as of April 20, 2026.
+    </footer>
+</div>
+
+<script>
+    // THE FINAL VERIFIED DATASET
+    const teamData = [
+        { team: "Atlanta Hawks", under: { name: "CJ McCollum", score: "+15.51", id: 2490149 }, over: { name: "Jalen Johnson", score: "-27.28", id: 4701230 } },
+        { team: "Boston Celtics", under: { name: "Nikola Vučević", score: "+36.71", id: 6478 }, over: { name: "Jaylen Brown", score: "-23.48", id: 3917376 } },
+        { team: "Brooklyn Nets", under: { name: "Day'Ron Sharpe", score: "+7.77", id: 4431678 }, over: { name: "Nic Claxton", score: "-0.48", id: 4278067 } },
+        { team: "Charlotte Hornets", under: { name: "Coby White", score: "+25.29", id: 4395625 }, over: { name: "LaMelo Ball", score: "-21.79", id: 4432816 } },
+        { team: "Chicago Bulls", under: { name: "Anfernee Simons", score: "+21.66", id: 4351851 }, over: { name: "Isaac Okoro", score: "-1.04", id: 4432812 } },
+        { team: "Cleveland Cavaliers", under: { name: "James Harden", score: "+30.94", id: 3992 }, over: { name: "Evan Mobley", score: "-6.77", id: 4432815 } },
+        { team: "Dallas Mavericks", under: { name: "Dereck Lively II", score: "+7.53", id: 5105633 }, over: { name: "P.J. Washington", score: "-22.35", id: 4278078 } },
+        { team: "Denver Nuggets", under: { name: "Nikola Jokić", score: "+52.58", id: 3112335 }, over: { name: "Christian Braun", score: "-22.47", id: 4431767 } },
+        { team: "Detroit Pistons", under: { name: "Jalen Duren", score: "+35.04", id: 4432816 }, over: { name: "Cade Cunningham", score: "-12.13", id: 4432166 } },
+        { team: "Golden State Warriors", under: { name: "Stephen Curry", score: "+7.48", id: 3975 }, over: { name: "Moses Moody", score: "-4.44", id: 4432171 } },
+        { team: "Houston Rockets", under: { name: "Amen Thompson", score: "+27.38", id: 5105570 }, over: { name: "Jabari Smith Jr.", score: "-34.72", id: 4432639 } },
+        { team: "Indiana Pacers", under: { name: "Pascal Siakam", score: "+5.28", id: 3149673 }, over: { name: "Aaron Nesmith", score: "-16.23", id: 4396909 } },
+        { team: "LA Clippers", under: { name: "Bennedict Mathurin", score: "+17.17", id: 4683634 }, over: { name: "Kawhi Leonard", score: "-1.85", id: 6450 } },
+        { team: "LA Lakers", under: { name: "Austin Reaves", score: "+20.34", id: 4066457 }, over: { name: "LeBron James", score: "-29.11", id: 1966 } },
+        { team: "Memphis Grizzlies", under: { name: "Santi Aldama", score: "+5.77", id: 4432161 }, over: { name: "Ja Morant", score: "-13.65", id: 4395625 } },
+        { team: "Miami Heat", under: { name: "Tyler Herro", score: "+29.13", id: 4395627 }, over: { name: "Bam Adebayo", score: "-10.35", id: 4066261 } },
+        { team: "Milwaukee Bucks", under: { name: "Giannis Antetokounmpo", score: "+24.00", id: 3032977 }, over: { name: "A.J. Green", score: "-24.05", id: 4397475 } },
+        { team: "Minnesota Timberwolves", under: { name: "Mike Conley", score: "+17.61", id: 3195 }, over: { name: "Naz Reid", score: "-12.82", id: 4396971 } },
+        { team: "New Orleans Pelicans", under: { name: "Jordan Poole", score: "+9.33", id: 4066354 }, over: { name: "Herbert Jones", score: "-36.17", id: 4277813 } },
+        { team: "New York Knicks", under: { name: "Josh Hart", score: "+16.50", id: 3062679 }, over: { name: "Mikal Bridges", score: "-24.02", id: 3147657 } },
+        { team: "Oklahoma City Thunder", under: { name: "Isaiah Hartenstein", score: "+13.39", id: 3934668 }, over: { name: "Chet Holmgren", score: "-53.38", id: 4433255 } },
+        { team: "Orlando Magic", under: { name: "Moritz Wagner", score: "+17.47", id: 3150844 }, over: { name: "Paolo Banchero", score: "-37.35", id: 4432573 } },
+        { team: "Philadelphia 76ers", under: { name: "Paul George*", score: "-23.72", id: 4251 }, over: { name: "Joel Embiid", score: "-35.84", id: 3059318 } },
+        { team: "Phoenix Suns", under: { name: "Mark Williams", score: "+24.31", id: 4432161 }, over: { name: "Devin Booker", score: "-31.73", id: 3136193 } },
+        { team: "Portland Trail Blazers", under: { name: "Robert Williams", score: "+5.93", id: 4396668 }, over: { name: "Shaedon Sharpe", score: "-17.40", id: 4914336 } },
+        { team: "Sacramento Kings", under: { name: "Domantas Sabonis", score: "+20.39", id: 3155942 }, over: { name: "Keegan Murray", score: "-34.41", id: 4594327 } },
+        { team: "San Antonio Spurs", under: { name: "Victor Wembanyama", score: "+16.04", id: 5104157 }, over: { name: "De'Aaron Fox", score: "-30.61", id: 4066259 } },
+        { team: "Toronto Raptors", under: { name: "RJ Barrett", score: "+12.91", id: 4395628 }, over: { name: "Scottie Barnes", score: "-24.09", id: 4433134 } },
+        { team: "Utah Jazz", under: { name: "Walker Kessler", score: "+24.85", id: 4433136 }, over: { name: "Lauri Markkanen", score: "-27.96", id: 3064440 } },
+        { team: "Washington Wizards", under: { name: "Trae Young", score: "+22.80", id: 4277905 }, over: { name: "Alex Sarr", score: "-2.83", id: 5160992 } }
+    ];
+
+    const teamGrid = document.getElementById('team-grid');
+
+    function getHeadshot(id) {
+        return `https://a.espncdn.com/i/headshots/nba/players/full/${id}.png`;
+    }
+
+    teamData.forEach(team => {
+        const panel = document.createElement('div');
+        panel.className = 'team-panel';
+
+        panel.innerHTML = `
+            <div class="team-header">${team.team}</div>
+            
+            <div class="player-row underrated-row">
+                <div class="player-photo">
+                    <img src="${getHeadshot(team.under.id)}" onerror="this.src='https://a.espncdn.com/combiner/i?img=/i/headshots/noplayer.png'">
+                </div>
+                <div class="player-info">
+                    <div class="label underrated-label">Most Underrated</div>
+                    <div class="player-name">${team.under.name.toUpperCase()}</div>
+                </div>
+                <div class="value-score underrated-score">${team.under.score}</div>
+            </div>
+
+            <div class="player-row overrated-row">
+                <div class="player-photo">
+                    <img src="${getHeadshot(team.over.id)}" onerror="this.src='https://a.espncdn.com/combiner/i?img=/i/headshots/noplayer.png'">
+                </div>
+                <div class="player-info">
+                    <div class="label overrated-label">Most Overrated</div>
+                    <div class="player-name">${team.over.name.toUpperCase()}</div>
+                </div>
+                <div class="value-score overrated-score">${team.over.score}</div>
+            </div>
+        `;
+        teamGrid.appendChild(panel);
+    });
+</script>
+
+</body>
+</html>
